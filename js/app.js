@@ -2,45 +2,120 @@
 const API_URL = 'https://sheetdb.io/api/v1/ihekm93q9pwgf'; 
 let allAssets = []; 
 
-// Custom modal to replace browser alert()
-function showModal(message, onClose) {
+// Custom modal to replace browser alert() with premium styling
+function showModal(message, typeOrOnClose, onClose) {
+    let type = 'success';
+    let callback = onClose;
+
+    if (typeof typeOrOnClose === 'function') {
+        callback = typeOrOnClose;
+    } else if (typeof typeOrOnClose === 'string') {
+        type = typeOrOnClose;
+    }
+
+    // Auto-detect errors from message text
+    const lowerMessage = message.toLowerCase();
+    if (lowerMessage.includes('error') || lowerMessage.includes('mismatch') || lowerMessage.includes('fill') || lowerMessage.includes('fail')) {
+        type = 'error';
+    }
+
     // Remove existing modal if any
     const existing = document.getElementById('custom-modal-overlay');
     if (existing) existing.remove();
 
     const overlay = document.createElement('div');
     overlay.id = 'custom-modal-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);animation:modalFadeIn 0.2s ease;';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.3);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px);animation:modalFadeIn 0.3s cubic-bezier(0.16,1,0.3,1) both;';
 
     const modal = document.createElement('div');
-    modal.style.cssText = 'background:#fff;border-radius:16px;padding:28px 24px 20px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:modalSlideIn 0.25s ease;';
+    modal.style.cssText = 'background:#ffffff;border-radius:24px;padding:32px 24px 24px;max-width:340px;width:88%;text-align:center;box-shadow:0 25px 50px -12px rgba(0,0,0,0.15);animation:modalScaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;';
+
+    // SVG Icons
+    let iconHtml = '';
+    if (type === 'success') {
+        iconHtml = `
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: #d1fae5; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; animation: iconPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        `;
+    } else {
+        iconHtml = `
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; animation: iconPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both, shake 0.5s ease-in-out;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+        `;
+    }
+
+    const titleText = type === 'success' ? 'Pinjam Jap' : 'Attention';
 
     const title = document.createElement('div');
-    title.style.cssText = 'font-weight:700;font-size:1rem;color:#1e293b;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;';
-    title.textContent = 'Pinjam Jap : System Borrowing System';
+    title.style.cssText = 'font-weight:800;font-size:1.25rem;color:#0f172a;margin-bottom:8px;';
+    title.textContent = titleText;
 
     const msg = document.createElement('div');
-    msg.style.cssText = 'font-size:0.95rem;color:#475569;margin-bottom:20px;line-height:1.5;';
+    msg.style.cssText = 'font-size:0.95rem;color:#475569;margin-bottom:24px;line-height:1.5;font-weight:500;';
     msg.textContent = message;
 
     const btn = document.createElement('button');
     btn.textContent = 'OK';
-    btn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:12px 0;width:100%;font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s;';
-    btn.onmouseenter = () => btn.style.background = '#2563eb';
-    btn.onmouseleave = () => btn.style.background = '#3b82f6';
-    btn.onclick = () => { overlay.remove(); if (onClose) onClose(); };
+    btn.style.cssText = 'background:#3b82f6;color:#ffffff;border:none;border-radius:14px;padding:14px 0;width:100%;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1);';
+    btn.onmouseenter = () => {
+        btn.style.background = '#2563eb';
+        btn.style.transform = 'translateY(-1px)';
+    };
+    btn.onmouseleave = () => {
+        btn.style.background = '#3b82f6';
+        btn.style.transform = 'none';
+    };
 
+    // Close function
+    let didClose = false;
+    const closeModal = () => {
+        if (didClose) return;
+        didClose = true;
+        overlay.style.animation = 'modalFadeOut 0.2s ease both';
+        modal.style.animation = 'modalScaleOut 0.2s ease both';
+        setTimeout(() => {
+            overlay.remove();
+            if (callback) callback();
+        }, 200);
+    };
+
+    btn.onclick = closeModal;
+
+    modal.innerHTML = iconHtml;
     modal.appendChild(title);
     modal.appendChild(msg);
     modal.appendChild(btn);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Add animation keyframes if not already added
+    // Auto-dismiss for success redirects after 2 seconds
+    if (type === 'success' && callback) {
+        setTimeout(closeModal, 2000);
+    }
+
+    // Add keyframes
     if (!document.getElementById('modal-keyframes')) {
         const style = document.createElement('style');
         style.id = 'modal-keyframes';
-        style.textContent = '@keyframes modalFadeIn{from{opacity:0}to{opacity:1}}@keyframes modalSlideIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}';
+        style.textContent = `
+            @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes modalFadeOut { from { opacity: 1; } to { opacity: 0; } }
+            @keyframes modalScaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            @keyframes modalScaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
+            @keyframes iconPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-6px); }
+                40%, 80% { transform: translateX(6px); }
+            }
+        `;
         document.head.appendChild(style);
     }
 
