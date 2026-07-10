@@ -1,0 +1,251 @@
+:root {
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --text-muted: #64748b;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+/* --- Modern App Styling --- */
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+    text-align: center;
+}
+
+/* --- Asset Cards --- */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+/* --- Status Badges --- */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.available { background-color: #d1fae5; color: #065f46; }
+.borrowed { background-color: #fee2e2; color: #991b1b; }
+
+/* --- Forms & Inputs --- */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 15px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px; /* Prevents auto-zoom on iPhone */
+}
+
+/* --- Buttons --- */
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+#confirm-borrow-btn { background-color: #10b981; color: white; }
+#return-btn { background-color: #f59e0b; color: white; }
+button:disabled { background-color: #ccc; }
+
+/* --- History Section --- */
+.history-item {
+    border-left: 4px solid #3b82f6;
+    background: #eff6ff;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Styling for labels above inputs */
+label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #64748b;
+    margin-bottom: 2px;
+    text-align: left;
+}
+
+/* Add some padding to the Info card */
+#asset-info h2 {
+    margin: 0 0 5px 0;
+    text-align: left;
+}
+
+#asset-info p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* History styling */
+.history-item {
+    border-bottom: 1px solid #edf2f7;
+    padding: 12px 0;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+/* --- Modern Navigation --- */
+.nav-header {
+    margin-bottom: 24px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #3b82f6;
+}
+
+/* --- Improved Card Design --- */
+.card {
+    background: #ffffff;
+    border-radius: 16px; /* Smoother corners */
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+}
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+.card-header h3 {
+    margin: 0;
+    text-align: left;
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+.card-header p {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-align: left;
+}
+
+/* --- Action Specific Borders --- */
+.action-card.borrow { border-top: 6px solid #10b981; }
+.action-card.return { border-top: 6px solid #f59e0b; }
+
+/* --- Forms & Inputs --- */
+.input-group {
+    margin-bottom: 16px;
+}
+
+label {
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    letter-spacing: 0.025em;
+    color: #475569;
+}
+
+input {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* --- Borrower Display Box --- */
+.borrower-info {
+    background: #fffbeb;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.highlight-text {
+    font-weight: 600;
+    color: #92400e;
+    font-size: 1rem;
+}
+
+/* --- History Items --- */
+.history-item {
+    border-left: 3px solid #e2e8f0;
+    padding-left: 16px;
+    margin-bottom: 16px;
+    background: none;
+    border-radius: 0;
+}
+
+/* Buttons with Hover Effects */
+button {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    filter: brightness(1.05);
+}
+
+/* --- Loader Spinner --- */
+.loader-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
