@@ -2,6 +2,51 @@
 const API_URL = 'https://sheetdb.io/api/v1/ihekm93q9pwgf'; 
 let allAssets = []; 
 
+// Custom modal to replace browser alert()
+function showModal(message, onClose) {
+    // Remove existing modal if any
+    const existing = document.getElementById('custom-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'custom-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);animation:modalFadeIn 0.2s ease;';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:16px;padding:28px 24px 20px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:modalSlideIn 0.25s ease;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:700;font-size:1rem;color:#1e293b;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;';
+    title.textContent = 'Pinjam Jap : System Borrowing System';
+
+    const msg = document.createElement('div');
+    msg.style.cssText = 'font-size:0.95rem;color:#475569;margin-bottom:20px;line-height:1.5;';
+    msg.textContent = message;
+
+    const btn = document.createElement('button');
+    btn.textContent = 'OK';
+    btn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:12px 0;width:100%;font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s;';
+    btn.onmouseenter = () => btn.style.background = '#2563eb';
+    btn.onmouseleave = () => btn.style.background = '#3b82f6';
+    btn.onclick = () => { overlay.remove(); if (onClose) onClose(); };
+
+    modal.appendChild(title);
+    modal.appendChild(msg);
+    modal.appendChild(btn);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Add animation keyframes if not already added
+    if (!document.getElementById('modal-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'modal-keyframes';
+        style.textContent = '@keyframes modalFadeIn{from{opacity:0}to{opacity:1}}@keyframes modalSlideIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}';
+        document.head.appendChild(style);
+    }
+
+    btn.focus();
+}
+
 // Helper: Force date formatting
 function formatDate(value) {
     if (!value || value === "") return "Pending";
@@ -112,7 +157,7 @@ document.getElementById('confirm-borrow-btn').onclick = async () => {
     const sTeam = document.getElementById('staff-team').value; // Get team
     const bDate = document.getElementById('borrow-date').value;
 
-    if (!sId || !sName || !sTeam || !bDate) return alert("Fill all fields including Team");
+    if (!sId || !sName || !sTeam || !bDate) { showModal("Fill all fields including Team"); return; }
 
     await fetch(`${API_URL}/id/${assetId}`, {
         method: 'PATCH',
@@ -128,8 +173,7 @@ document.getElementById('confirm-borrow-btn').onclick = async () => {
             } 
         })
     });
-    alert("Borrowed!");
-    location.reload();
+    showModal("Borrowed!", () => location.reload());
 };
 
 document.getElementById('return-btn').onclick = async () => {
@@ -158,10 +202,9 @@ document.getElementById('return-btn').onclick = async () => {
                 }]
             })
         });
-        alert("Returned!");
-        location.reload();
+        showModal("Returned!", () => location.reload());
     } else {
-        alert("Staff ID mismatch!");
+        showModal("Staff ID mismatch!");
     }
 };
 
