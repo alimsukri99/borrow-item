@@ -1,6 +1,6 @@
 // 1. SETTINGS
-const API_URL = 'https://sheetdb.io/api/v1/ihekm93q9pwgf'; 
-let allAssets = []; 
+const API_URL = 'https://sheetdb.io/api/v1/ihekm93q9pwgf';
+let allAssets = [];
 
 // Custom modal to replace browser alert() with premium styling
 function showModal(message, typeOrOnClose, onClose) {
@@ -51,7 +51,7 @@ function showModal(message, typeOrOnClose, onClose) {
         `;
     }
 
-    const titleText = type === 'success' ? 'Pinjam Jap' : 'Attention';
+    const titleText = type === 'success' ? 'Pinjam Jap : System Borrowing System' : 'Attention';
 
     const title = document.createElement('div');
     title.style.cssText = 'font-weight:800;font-size:1.25rem;color:#0f172a;margin-bottom:8px;';
@@ -136,31 +136,31 @@ function formatDate(value) {
 async function loadAssets() {
     const listDiv = document.getElementById('asset-list');
     const searchInput = document.getElementById('asset-search');
-    
+
     if (!listDiv) return;
-    
+
     listDiv.innerHTML = "<p style='text-align:center;'>Loading assets...</p>";
-    
+
     try {
         const res = await fetch(API_URL);
-        allAssets = await res.json(); 
-        
-        displayAssets(allAssets); 
+        allAssets = await res.json();
+
+        displayAssets(allAssets);
 
         // ADDED THIS CHECK: Only listen if searchInput exists on this page
         if (searchInput) {
             searchInput.oninput = (e) => {
                 const searchTerm = e.target.value.toLowerCase();
-                const filtered = allAssets.filter(a => 
-                    a.name.toLowerCase().includes(searchTerm) || 
+                const filtered = allAssets.filter(a =>
+                    a.name.toLowerCase().includes(searchTerm) ||
                     a.id.toString().includes(searchTerm)
                 );
                 displayAssets(filtered);
             };
         }
-    } catch (e) { 
+    } catch (e) {
         console.error("Load Error:", e);
-        listDiv.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>"; 
+        listDiv.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>";
     }
 }
 
@@ -197,7 +197,7 @@ async function handleAssetPage() {
 
     const params = new URLSearchParams(window.location.search);
     const assetId = params.get('id');
-    
+
     try {
         const res = await fetch(`${API_URL}/search?id=${assetId}`);
         const data = await res.json();
@@ -210,7 +210,7 @@ async function handleAssetPage() {
 
         const borrowSec = document.getElementById('borrow-section');
         const returnSec = document.getElementById('return-section');
-        
+
         infoDiv.innerHTML = `
             <h2 style="margin:0;">${asset.name}</h2>
             <p>Current Status: <strong style="color: ${asset.status === 'available' ? '#10b981' : '#f59e0b'}">${asset.status.toUpperCase()}</strong></p>
@@ -226,62 +226,62 @@ async function handleAssetPage() {
 
         loadHistory(assetId);
 
-document.getElementById('confirm-borrow-btn').onclick = async () => {
-    const sId = document.getElementById('staff-id').value;
-    const sName = document.getElementById('staff-name').value;
-    const sTeam = document.getElementById('staff-team').value; // Get team
-    const bDate = document.getElementById('borrow-date').value;
+        document.getElementById('confirm-borrow-btn').onclick = async () => {
+            const sId = document.getElementById('staff-id').value;
+            const sName = document.getElementById('staff-name').value;
+            const sTeam = document.getElementById('staff-team').value; // Get team
+            const bDate = document.getElementById('borrow-date').value;
 
-    if (!sId || !sName || !sTeam || !bDate) { showModal("Fill all fields including Team"); return; }
+            if (!sId || !sName || !sTeam || !bDate) { showModal("Fill all fields including Team"); return; }
 
-    await fetch(`${API_URL}/id/${assetId}`, {
-        method: 'PATCH',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ 
-            data: { 
-                status: 'borrowed', 
-                staffId: sId, 
-                borrowerName: sName, 
-                team: sTeam, // Save team to main sheet
-                date: bDate, 
-                returnDate: '' 
-            } 
-        })
-    });
-    showModal("Borrowed!", () => location.reload());
-};
+            await fetch(`${API_URL}/id/${assetId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    data: {
+                        status: 'borrowed',
+                        staffId: sId,
+                        borrowerName: sName,
+                        team: sTeam, // Save team to main sheet
+                        date: bDate,
+                        returnDate: ''
+                    }
+                })
+            });
+            showModal("Borrowed!", () => location.reload());
+        };
 
-document.getElementById('return-btn').onclick = async () => {
-    const verifyId = document.getElementById('verify-staff-id').value;
-    const today = new Date().toISOString().split('T')[0];
+        document.getElementById('return-btn').onclick = async () => {
+            const verifyId = document.getElementById('verify-staff-id').value;
+            const today = new Date().toISOString().split('T')[0];
 
-    if (verifyId.trim() === asset.staffId.toString().trim()) {
-        await fetch(`${API_URL}/id/${assetId}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ data: { status: 'available', returnDate: today } })
-        });
+            if (verifyId.trim() === asset.staffId.toString().trim()) {
+                await fetch(`${API_URL}/id/${assetId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: { status: 'available', returnDate: today } })
+                });
 
-        await fetch(`${API_URL}?sheet=history`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                data: [{
-                    id: assetId,
-                    name: asset.name,
-                    staffId: asset.staffId,
-                    borrowerName: asset.borrowerName,
-                    team: asset.team, // Log team to history
-                    date: asset.date,
-                    returnDate: today
-                }]
-            })
-        });
-        showModal("Returned!", () => location.reload());
-    } else {
-        showModal("Staff ID mismatch!");
-    }
-};
+                await fetch(`${API_URL}?sheet=history`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        data: [{
+                            id: assetId,
+                            name: asset.name,
+                            staffId: asset.staffId,
+                            borrowerName: asset.borrowerName,
+                            team: asset.team, // Log team to history
+                            date: asset.date,
+                            returnDate: today
+                        }]
+                    })
+                });
+                showModal("Returned!", () => location.reload());
+            } else {
+                showModal("Staff ID mismatch!");
+            }
+        };
 
     } catch (err) { infoDiv.innerHTML = "Error loading details."; }
 }
@@ -302,9 +302,9 @@ async function loadHistory(assetId) {
 
         const recentLogs = logs.reverse().slice(0, 2);
 
-// Inside loadHistory function mapping
+        // Inside loadHistory function mapping
 
-historyDiv.innerHTML = recentLogs.map(log => `
+        historyDiv.innerHTML = recentLogs.map(log => `
     <div class="history-item">
         <div style="font-weight: 700;">${log.borrowerName}</div>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
