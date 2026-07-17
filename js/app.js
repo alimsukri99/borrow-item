@@ -260,7 +260,6 @@ function applyFilters() {
     }
 }
 
-// THE MISSING FUNCTION - This is what draws the cards!
 function displayAssets(assetsToDisplay) {
     const listDiv = document.getElementById('asset-list');
     if (!listDiv) return;
@@ -271,19 +270,18 @@ function displayAssets(assetsToDisplay) {
     }
 
     listDiv.innerHTML = assetsToDisplay.map(a => `
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="font-size: 1.1em;">${a.name}</strong>
+        <a href="asset.html?id=${a.id}" class="card asset-card">
+            <div class="card-left">
+                <strong class="asset-name">${a.name}</strong>
+                ${a.status === 'borrowed' && a.borrowerName ? `<div class="borrower-tag">👤 ${a.borrowerName}</div>` : ''}
+            </div>
+            <div class="card-right">
                 <span class="badge ${a.status === 'available' ? 'available' : 'borrowed'}">
                     ${a.status.charAt(0).toUpperCase() + a.status.slice(1)}
                 </span>
+                <span class="tap-to-view">Tap to View →</span>
             </div>
-            ${a.category ? `<div class="asset-category-tag">${a.category}</div>` : ''}
-            ${a.status === 'borrowed' && a.borrowerName ? `<div class="borrower-tag">👤 ${a.borrowerName}</div>` : ''}
-            <a href="asset.html?id=${a.id}" style="text-decoration: none; color: #3b82f6; font-weight: bold; font-size: 0.9em;">
-                Tap to View →
-            </a>
-        </div>
+        </a>
     `).join('');
 }
 
