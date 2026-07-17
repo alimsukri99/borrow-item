@@ -58,12 +58,13 @@ borrow-item/
 |---|---|---|
 | `id` | string | Unique asset identifier |
 | `name` | string | Display name of the asset |
-| `status` | `"available"` \| `"borrowed"` | Current availability state |
+| `status` | `"available"` \| `"borrowed"` \| `"Borrowed"` | Current availability state (case-insensitive in code) |
 | `staffId` | string | ID of the current borrower (empty when available) |
 | `borrowerName` | string | Name of the current borrower |
 | `team` | string | Team/department of the borrower |
 | `date` | string/number | Borrow date (may be Excel serial number) |
 | `returnDate` | string | Return date (empty while borrowed) |
+| `Category` | string | Asset category (e.g. "Soundbar", "Sound System", "Gaming Console") |
 
 ### History Sheet
 
@@ -151,11 +152,10 @@ The `showModal()` function in `app.js` (lines 6–123) is self-contained:
 
 ### 4. Search & Filtering Enhancements
 
-Current search (`searchInput.oninput`) filters by `name` and `id` only. To extend:
-
-- Add more fields to the `.filter()` predicate in `loadAssets()`
-- Consider adding **category/status filter buttons** above the search input in `index.html`
-- Keep filtering client-side (all assets are already loaded into `allAssets[]`)
+- Search matches asset `name`, `id`, and current `borrowerName`.
+- Side-by-side select dropdowns filter assets dynamically by **Availability** and **Category**.
+- Dynamic categories are fetched and parsed from the main sheet data (extracting unique values from the `Category` key).
+- Filtering logic executes client-side on the cached `allAssets` array.
 
 ---
 

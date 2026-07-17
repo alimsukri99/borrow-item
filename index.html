@@ -12,24 +12,28 @@
     <div class="container">
         <h1>📦 Pinjam Jap 📦</h1>
         <h1>System Borrowing System</h1>
-        <p>Welcome to System Team assets borrowing and returning application. Search by asset name or borrower name, or use the filters below.</p>
+        <p>Welcome to System Team assets borrowing and returning application. Search by asset name or borrower name, or
+            use the filters below.</p>
         <div style="margin-bottom: 12px;">
-            <input type="text" id="asset-search" placeholder="Search asset name or borrower..." style="margin-bottom: 0;">
+            <input type="text" id="asset-search" placeholder="Search asset name or borrower..."
+                style="margin-bottom: 0;">
         </div>
 
-        <div class="filter-section">
-            <label class="filter-label">Availability</label>
-            <div class="filter-chips" id="status-filters">
-                <button class="chip active" data-status="all">All</button>
-                <button class="chip" data-status="available">✅ Available</button>
-                <button class="chip" data-status="borrowed">🔒 Borrowed</button>
+        <div class="filters-row">
+            <div class="filter-group">
+                <label for="status-filter" class="filter-label">Availability</label>
+                <select id="status-filter" class="filter-select">
+                    <option value="all">All Statuses</option>
+                    <option value="available">✅ Available</option>
+                    <option value="borrowed">🔒 Borrowed</option>
+                </select>
             </div>
-        </div>
 
-        <div class="filter-section" id="category-filter-section" style="display:none;">
-            <label class="filter-label">Category</label>
-            <div class="filter-chips" id="category-filters">
-                <!-- Populated dynamically from Google Sheet data -->
+            <div class="filter-group" id="category-filter-group" style="display:none;">
+                <label for="category-filter" class="filter-label">Category</label>
+                <select id="category-filter" class="filter-select">
+                    <option value="all">All Categories</option>
+                </select>
             </div>
         </div>
 

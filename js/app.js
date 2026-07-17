@@ -149,12 +149,17 @@ async function loadAssets() {
 
     try {
         const res = await fetch(API_URL);
-        allAssets = await res.json();
+        const rawAssets = await res.json();
+        allAssets = rawAssets.map(a => ({
+            ...a,
+            status: (a.status || '').toLowerCase(),
+            category: a.Category || a.category || ''
+        }));
 
-        // Build category filter chips from the data
+        // Build category filter options from the data
         buildCategoryFilters(allAssets);
 
-        // Set up status filter chip clicks
+        // Set up status filter select event listener
         setupStatusFilters();
 
         // Apply initial display
@@ -173,11 +178,11 @@ async function loadAssets() {
     }
 }
 
-// Build category filter chips dynamically from asset data
+// Build category filter options dynamically from asset data
 function buildCategoryFilters(assets) {
-    const container = document.getElementById('category-filters');
-    const section = document.getElementById('category-filter-section');
-    if (!container || !section) return;
+    const select = document.getElementById('category-filter');
+    const group = document.getElementById('category-filter-group');
+    if (!select || !group) return;
 
     // Extract unique categories from the data
     const categories = [...new Set(
@@ -188,54 +193,35 @@ function buildCategoryFilters(assets) {
 
     // Only show category section if there are categories in the data
     if (categories.length === 0) {
-        section.style.display = 'none';
+        group.style.display = 'none';
         return;
     }
 
-    section.style.display = 'block';
+    group.style.display = 'block';
 
-    // Build chips: "All" + each unique category
-    container.innerHTML = '';
-
-    const allChip = document.createElement('button');
-    allChip.className = 'chip active';
-    allChip.dataset.category = 'all';
-    allChip.textContent = 'All';
-    allChip.onclick = () => selectCategoryFilter('all');
-    container.appendChild(allChip);
-
+    // Populate dropdown options
+    select.innerHTML = '<option value="all">All Categories</option>';
     categories.forEach(cat => {
-        const chip = document.createElement('button');
-        chip.className = 'chip';
-        chip.dataset.category = cat;
-        chip.textContent = cat;
-        chip.onclick = () => selectCategoryFilter(cat);
-        container.appendChild(chip);
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
     });
+
+    select.onchange = (e) => {
+        activeCategoryFilter = e.target.value;
+        applyFilters();
+    };
 }
 
-// Set up status filter chip click handlers
+// Set up status filter select event handler
 function setupStatusFilters() {
-    const statusChips = document.querySelectorAll('#status-filters .chip');
-    statusChips.forEach(chip => {
-        chip.onclick = () => selectStatusFilter(chip.dataset.status);
-    });
-}
-
-// Handle status filter selection
-function selectStatusFilter(status) {
-    activeStatusFilter = status;
-    document.querySelectorAll('#status-filters .chip').forEach(c => c.classList.remove('active'));
-    document.querySelector(`#status-filters .chip[data-status="${status}"]`).classList.add('active');
-    applyFilters();
-}
-
-// Handle category filter selection
-function selectCategoryFilter(category) {
-    activeCategoryFilter = category;
-    document.querySelectorAll('#category-filters .chip').forEach(c => c.classList.remove('active'));
-    document.querySelector(`#category-filters .chip[data-category="${category}"]`).classList.add('active');
-    applyFilters();
+    const statusSelect = document.getElementById('status-filter');
+    if (!statusSelect) return;
+    statusSelect.onchange = (e) => {
+        activeStatusFilter = e.target.value;
+        applyFilters();
+    };
 }
 
 // Combined filter + search logic
@@ -289,7 +275,7 @@ function displayAssets(assetsToDisplay) {
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <strong style="font-size: 1.1em;">${a.name}</strong>
                 <span class="badge ${a.status === 'available' ? 'available' : 'borrowed'}">
-                    ${a.status}
+                    ${a.status.charAt(0).toUpperCase() + a.status.slice(1)}
                 </span>
             </div>
             ${a.category ? `<div class="asset-category-tag">${a.category}</div>` : ''}
@@ -318,6 +304,10 @@ async function handleAssetPage() {
             infoDiv.innerHTML = "Asset not found!";
             return;
         }
+
+        // Normalize status and category keys/values
+        asset.status = (asset.status || '').toLowerCase();
+        asset.category = asset.Category || asset.category || '';
 
         const borrowSec = document.getElementById('borrow-section');
         const returnSec = document.getElementById('return-section');
@@ -366,7 +356,7 @@ async function handleAssetPage() {
             const verifyId = document.getElementById('verify-staff-id').value;
             const today = new Date().toISOString().split('T')[0];
 
-            if (verifyId.trim() === asset.staffId.toString().trim()) {
+            if (verifyId.trim() === (asset.staffId || '').toString().trim()) {
                 await fetch(`${API_URL}/id/${assetId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
