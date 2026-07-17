@@ -261,6 +261,89 @@ button:hover {
     100% { transform: rotate(360deg); }
 }
 
+/* --- Filter Section --- */
+.filter-section {
+    margin-bottom: 16px;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    width: auto;
+    box-shadow: none;
+}
+
+.chip:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #eff6ff;
+    filter: none;
+}
+
+.chip.active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* --- Asset Count Indicator --- */
+.asset-count {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+/* --- Category Tag on Cards --- */
+.asset-category-tag {
+    display: inline-block;
+    background: #f0f9ff;
+    color: #0369a1;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin: 8px 0 4px 0;
+    letter-spacing: 0.02em;
+    border: 1px solid #bae6fd;
+}
+
+/* --- Borrower Tag on Cards --- */
+.borrower-tag {
+    font-size: 0.8rem;
+    color: #92400e;
+    margin: 4px 0 8px 0;
+    font-weight: 500;
+}
+
 /* --- Mobile Responsive --- */
 @media (max-width: 600px) {
     body {
@@ -309,5 +392,14 @@ button:hover {
 
     .nav-header {
         margin-bottom: 16px;
+    }
+
+    .chip {
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+
+    .filter-chips {
+        gap: 6px;
     }
 }

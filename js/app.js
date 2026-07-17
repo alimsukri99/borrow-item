@@ -133,6 +133,12 @@ function formatDate(value) {
 }
 
 // ===== 2. DISPLAY ASSET LIST (index.html) =====
+
+// Filter state
+let activeStatusFilter = 'all';
+let activeCategoryFilter = 'all';
+let currentSearchTerm = '';
+
 async function loadAssets() {
     const listDiv = document.getElementById('asset-list');
     const searchInput = document.getElementById('asset-search');
@@ -145,22 +151,126 @@ async function loadAssets() {
         const res = await fetch(API_URL);
         allAssets = await res.json();
 
-        displayAssets(allAssets);
+        // Build category filter chips from the data
+        buildCategoryFilters(allAssets);
+
+        // Set up status filter chip clicks
+        setupStatusFilters();
+
+        // Apply initial display
+        applyFilters();
 
         // ADDED THIS CHECK: Only listen if searchInput exists on this page
         if (searchInput) {
             searchInput.oninput = (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filtered = allAssets.filter(a =>
-                    a.name.toLowerCase().includes(searchTerm) ||
-                    a.id.toString().includes(searchTerm)
-                );
-                displayAssets(filtered);
+                currentSearchTerm = e.target.value.toLowerCase();
+                applyFilters();
             };
         }
     } catch (e) {
         console.error("Load Error:", e);
         listDiv.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>";
+    }
+}
+
+// Build category filter chips dynamically from asset data
+function buildCategoryFilters(assets) {
+    const container = document.getElementById('category-filters');
+    const section = document.getElementById('category-filter-section');
+    if (!container || !section) return;
+
+    // Extract unique categories from the data
+    const categories = [...new Set(
+        assets
+            .map(a => (a.category || '').trim())
+            .filter(c => c !== '')
+    )].sort();
+
+    // Only show category section if there are categories in the data
+    if (categories.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Build chips: "All" + each unique category
+    container.innerHTML = '';
+
+    const allChip = document.createElement('button');
+    allChip.className = 'chip active';
+    allChip.dataset.category = 'all';
+    allChip.textContent = 'All';
+    allChip.onclick = () => selectCategoryFilter('all');
+    container.appendChild(allChip);
+
+    categories.forEach(cat => {
+        const chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.dataset.category = cat;
+        chip.textContent = cat;
+        chip.onclick = () => selectCategoryFilter(cat);
+        container.appendChild(chip);
+    });
+}
+
+// Set up status filter chip click handlers
+function setupStatusFilters() {
+    const statusChips = document.querySelectorAll('#status-filters .chip');
+    statusChips.forEach(chip => {
+        chip.onclick = () => selectStatusFilter(chip.dataset.status);
+    });
+}
+
+// Handle status filter selection
+function selectStatusFilter(status) {
+    activeStatusFilter = status;
+    document.querySelectorAll('#status-filters .chip').forEach(c => c.classList.remove('active'));
+    document.querySelector(`#status-filters .chip[data-status="${status}"]`).classList.add('active');
+    applyFilters();
+}
+
+// Handle category filter selection
+function selectCategoryFilter(category) {
+    activeCategoryFilter = category;
+    document.querySelectorAll('#category-filters .chip').forEach(c => c.classList.remove('active'));
+    document.querySelector(`#category-filters .chip[data-category="${category}"]`).classList.add('active');
+    applyFilters();
+}
+
+// Combined filter + search logic
+function applyFilters() {
+    let filtered = allAssets;
+
+    // 1. Status filter
+    if (activeStatusFilter !== 'all') {
+        filtered = filtered.filter(a => a.status === activeStatusFilter);
+    }
+
+    // 2. Category filter
+    if (activeCategoryFilter !== 'all') {
+        filtered = filtered.filter(a => (a.category || '').trim() === activeCategoryFilter);
+    }
+
+    // 3. Search — matches name, id, OR borrowerName
+    if (currentSearchTerm) {
+        filtered = filtered.filter(a =>
+            a.name.toLowerCase().includes(currentSearchTerm) ||
+            a.id.toString().includes(currentSearchTerm) ||
+            (a.borrowerName || '').toLowerCase().includes(currentSearchTerm)
+        );
+    }
+
+    displayAssets(filtered);
+
+    // Update count indicator
+    const countDiv = document.getElementById('asset-count');
+    if (countDiv) {
+        const total = allAssets.length;
+        const shown = filtered.length;
+        countDiv.textContent = shown === total
+            ? `Showing all ${total} assets`
+            : `Showing ${shown} of ${total} assets`;
     }
 }
 
@@ -182,7 +292,8 @@ function displayAssets(assetsToDisplay) {
                     ${a.status}
                 </span>
             </div>
-            
+            ${a.category ? `<div class="asset-category-tag">${a.category}</div>` : ''}
+            ${a.status === 'borrowed' && a.borrowerName ? `<div class="borrower-tag">👤 ${a.borrowerName}</div>` : ''}
             <a href="asset.html?id=${a.id}" style="text-decoration: none; color: #3b82f6; font-weight: bold; font-size: 0.9em;">
                 Tap to View →
             </a>

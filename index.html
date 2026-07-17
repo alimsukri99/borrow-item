@@ -10,12 +10,30 @@
 
 <body>
     <div class="container">
-        <h1>📦 Pinjam Jap : System Borrowing System</h1>
-        <p>Welcome to System Team assets borrowing and returning application. You can search for assest by type in the
-            search box or scroll down. </p>
-        <div style="margin-bottom: 20px;">
-            <input type="text" id="asset-search" placeholder="Search asset name..." style="margin-bottom: 0;">
+        <h1>📦 Pinjam Jap 📦</h1>
+        <h1>System Borrowing System</h1>
+        <p>Welcome to System Team assets borrowing and returning application. Search by asset name or borrower name, or use the filters below.</p>
+        <div style="margin-bottom: 12px;">
+            <input type="text" id="asset-search" placeholder="Search asset name or borrower..." style="margin-bottom: 0;">
         </div>
+
+        <div class="filter-section">
+            <label class="filter-label">Availability</label>
+            <div class="filter-chips" id="status-filters">
+                <button class="chip active" data-status="all">All</button>
+                <button class="chip" data-status="available">✅ Available</button>
+                <button class="chip" data-status="borrowed">🔒 Borrowed</button>
+            </div>
+        </div>
+
+        <div class="filter-section" id="category-filter-section" style="display:none;">
+            <label class="filter-label">Category</label>
+            <div class="filter-chips" id="category-filters">
+                <!-- Populated dynamically from Google Sheet data -->
+            </div>
+        </div>
+
+        <div id="asset-count" class="asset-count"></div>
 
         <div id="asset-list"></div>
     </div>
